@@ -1,0 +1,7 @@
+#include <iostream>
+#include <string>
+#include <stack>
+#include <stdexcept>
+#include <map>
+
+bool isBalanced(std::string const &eq, std::map<char, char> const &matchMap);
