@@ -1,0 +1,4 @@
+#include <iostream>
+
+unsigned long long hilbertDist(size_t order, unsigned long long middle,
+	                           unsigned long long x, unsigned long long y);

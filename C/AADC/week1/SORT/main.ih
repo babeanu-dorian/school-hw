@@ -1,0 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+
+void *safeMalloc(size_t size);
+size_t *generateArr(size_t n, size_t a, size_t b, size_t c);
+void countingSort(size_t *arr, size_t size, size_t upBound);
+void jumpPrint(size_t *arr, size_t size, size_t jump);

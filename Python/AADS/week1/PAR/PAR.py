@@ -55,6 +55,6 @@ c = int (stdin.readline().strip())
 
 for i in range (0, c):
 	if isBalanced(stdin.readline().strip()):
-		print "YES"
+		print("YES")
 	else:
-		print "NO"
+		print("NO")
