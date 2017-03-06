@@ -1,0 +1,6 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <unordered_map>
+
+size_t maxShift(std::vector<std::string> const &overlapMap);

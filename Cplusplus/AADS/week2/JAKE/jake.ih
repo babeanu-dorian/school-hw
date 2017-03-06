@@ -1,0 +1,4 @@
+#include <iostream>
+#include <vector>
+
+size_t balancedPartSum(std::vector<size_t> arr, size_t sum);
