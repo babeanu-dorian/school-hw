@@ -1,0 +1,190 @@
+%class-name Parser
+
+%filenames parser
+%parsefun-source parse.cc
+
+%baseclass-preinclude rulevalue.h
+
+%stype RuleValue
+
+%scanner ../scanner/scanner.h
+
+%token  NUMBER
+        IDENT
+        E
+        PI
+        EXP
+        LN
+        SIN
+        COS
+        TAN
+        ASIN
+        ACOS
+        ATAN
+        SQRT
+        ABS
+        RAD
+        DEG
+        GRAD
+
+%right  '='
+%left   '+' '-'
+%right  uMinus
+
+// %debug
+
+%%
+
+lines:
+    lines line
+|
+    line
+;
+
+
+line:
+    RAD
+    {
+        d_angleType = ANGLE_RAD;
+    }
+|
+    DEG
+    {
+        d_angleType = ANGLE_DEG;
+    }
+|
+    GRAD
+    {
+        d_angleType = ANGLE_GRAD;
+    }
+|
+    expr '\n'
+    {
+        display($1);
+    }
+|
+    error '\n'    
+    {
+        prompt();
+    }
+|
+    '\n'
+    {
+        prompt();
+    }
+;
+
+
+expr:
+    NUMBER
+    {
+        $$ = value();
+    }
+|
+    IDENT
+    {
+        $$ = variable();
+    }
+|
+    E
+    {
+        $$ = RuleValue(E_VAL);
+    }
+|
+    PI
+    {
+        $$ = RuleValue(PI_VAL);
+    }
+|
+    EXP '(' expr ')'
+    {
+        $$ = RuleValue(exp(valueOf($3)));
+    }
+|
+    LN '(' expr ')'
+    {
+        double val = valueOf($3);
+        if (val < 0) // log(0) returns -inf, so it's fine
+            error("ln only accepts positive values");
+
+        $$ = RuleValue(log(val));
+    }
+|
+    SIN '(' expr ')'
+    {
+        $$ = RuleValue(sin(angleIn($3)));
+    }
+|
+    COS '(' expr ')'
+    {
+        $$ = RuleValue(cos(angleIn($3)));
+    }
+|
+    TAN '(' expr ')'
+    {
+        $$ = RuleValue(tan(angleIn($3)));
+    }
+|
+    ASIN '(' expr ')'
+    {
+        double val = valueOf($3);
+        if (val < -1 || val > 1)
+            error("asin only accepts values in the interval [-1, 1]");
+
+        $$ = angleOut(asin(val));
+    }
+|
+    ACOS '(' expr ')'
+    {
+        double val = valueOf($3);
+        if (val < -1 || val > 1)
+            error("acos only accepts values in the interval [-1, 1]");
+
+        $$ = angleOut(acos(val));
+    }
+|
+    ATAN '(' expr ')'
+    {
+        $$ = angleOut(atan(valueOf($3)));
+    }
+|
+    SQRT '(' expr ')'
+    {
+        double val = valueOf($3);
+        if (val < 0)
+            error("sqrt only accepts positive values");
+
+        $$ = RuleValue(sqrt(val));
+    }
+|
+    ABS '(' expr ')'
+    {
+        $$ = RuleValue(abs(valueOf($3)));
+    }
+|
+    '-' expr            %prec uMinus
+    {
+        $$ = negate($2);
+    }
+|
+    expr '+' expr
+    {
+        $$ = add($1, $3);
+    }    
+|
+    expr '-' expr
+    {
+        $$ = sub($1, $3);
+
+    }    
+|
+    '(' expr ')'
+    {
+        $$ = $2;
+    }
+|
+    expr '=' expr
+    {
+        $$ = assign($1, $3);
+    }
+;
